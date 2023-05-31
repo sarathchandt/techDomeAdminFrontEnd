@@ -7,6 +7,7 @@ import ProtectedRoutes from './pages/ProtectedRoutes';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Profile from './pages/Profile';
+import ViewPost from './pages/ViewPost';
 
 function App() {
 
@@ -21,6 +22,7 @@ function App() {
             <Route path='/' element={<Home />} />
           <Route element={<ProtectedRoutes />}>
           <Route path='/profile' element={<Profile/>} />
+          <Route path='/viewPost' element={<ViewPost/>} />
           </Route>
         </Routes>
       </Router>
