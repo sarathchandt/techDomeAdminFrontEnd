@@ -1,1 +1,1 @@
-export const API = 'http://localhost:3033/'
+export const API = 'https://techdomeblog.onrender.com/'
