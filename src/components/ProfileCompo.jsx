@@ -11,37 +11,39 @@ function ProfileCompo() {
     const [text, setText] = useState("")
     const [heading, setHeading] = useState('')
     const [addPost, setAddpost] = useState(true)
-    const [allPosts , setAllPosts] = useState([])
+    const [allPosts, setAllPosts] = useState([])
     const navigate = useNavigate()
 
-    useEffect(()=>{
+    useEffect(() => {
         let token = localStorage.getItem("userId");
         const headers = { Authorization: `Bearer ${token}` };
-        axios.get(`${API}user/fetchPost`,{headers}).then(post=>{
+        axios.get(`${API}user/fetchPost`, { headers }).then(post => {
             setAllPosts(post.data.posts)
         })
     })
 
 
-    function gotoPost(id){
+    function gotoPost(id) {
         navigate({
-            pathname:"/viewPost",
-            search:createSearchParams({
-                post_id:id
+            pathname: "/viewPost",
+            search: createSearchParams({
+                post_id: id
             }).toString()
         })
     }
 
     function upload(e) {
         e.preventDefault()
+        
         if (photo.length == 0 || text.length < 2000 || heading < 0 || heading > 15) {
             if (heading < 0 || heading > 15) {
                 toast("Heading should be below 15 words")
             } else {
-
+                
                 toast.error("Please add values and your content must be above 2000 letters")
             }
         } else {
+            const notification = toast.loading("Please wait a while...")
 
             let formData = new FormData();
             formData.append("file", photo);
@@ -51,7 +53,18 @@ function ProfileCompo() {
             let token = localStorage.getItem("userId");
             const headers = { Authorization: `Bearer ${token}` };
             axios.post(`${API}user/upload`, formData, { headers }).then(() => {
+                setPhoto([]);
+                setText("");
+                setHeading("")
+                let token = localStorage.getItem("userId");
+                const headers = { Authorization: `Bearer ${token}` };
+                axios.get(`${API}user/fetchPost`, { headers }).then(post => {
+                    setAllPosts(post.data.posts)
+                    toast.success("Posted",
+                    {id:notification})
                     setAddpost(false);
+                })
+               
             }).catch(() => {
                 toast.error("Something went wrong")
             })
@@ -109,20 +122,20 @@ function ProfileCompo() {
                             </div> : <>
                                 <div className="w-full my-5 ">
 
-                                {
-                                    allPosts.map(data=>{
-                                        return <>
-                                        <div className="w-full  md:px-20 py-2 relative ">
-                                            <img src={`${API}images/${data.image}`} className="object-cover w-full h-36 rounded-lg border-2" alt="" />
-                                            <div className="absolute top-0 left-10 w-full flex flex-col justify-center items-center h-36 ">
-                                                <p className="text-white text-2xl font-serif uppercase stroke-black ">{data.heading}</p>
-                                                <p className="bg-black px-4 rounded  text-white cursor-pointer" onClick={()=>{gotoPost(data._id)}}>View</p>
-                                            </div>
-                                        </div>
-                                        
-                                        </>
-                                    })
-                                }
+                                    {
+                                        allPosts.map(data => {
+                                            return <>
+                                                <div className="w-full  md:px-20 py-2 relative ">
+                                                    <img src={`${API}images/${data.image}`} className="object-cover w-full h-36 rounded-lg border-2" alt="" />
+                                                    <div className="absolute top-0 left-10 w-full flex flex-col justify-center items-center h-36 ">
+                                                        <p className="text-white text-2xl font-serif uppercase stroke-black ">{data.heading}</p>
+                                                        <p className="bg-black px-4 rounded  text-white cursor-pointer" onClick={() => { gotoPost(data._id) }}>View</p>
+                                                    </div>
+                                                </div>
+
+                                            </>
+                                        })
+                                    }
                                 </div>
                             </>}
 

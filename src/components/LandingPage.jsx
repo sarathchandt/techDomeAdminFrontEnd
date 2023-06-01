@@ -3,9 +3,47 @@ import { AiOutlineArrowRight } from "@react-icons/all-files/ai/AiOutlineArrowRig
 
 import Carousel from 'react-multi-carousel';
 import 'react-multi-carousel/lib/styles.css';
+import { useEffect, useState } from "react";
+import axios from "axios";
+import { API } from "../../api/api";
+import { toast } from "react-hot-toast";
+import { createSearchParams, useNavigate } from "react-router-dom";
 
 
 function LandingPage() {
+
+    const [logedIn, setLoggedIn] = useState(false)
+    const [coroselPost, setCoroselPost] = useState([])
+    const navigate = useNavigate()
+    useEffect(() => {
+
+        axios.get(`${API}user/fetch10post`).then((res) => {
+            console.log(res.data.posts);
+            setCoroselPost(res.data.posts)
+        })
+
+        let token = localStorage.getItem("userId");
+
+        const headers = { Authorization: `Bearer ${token}` };
+        axios.get(`${API}user/isAuthenticated`, { headers }).then(() => {
+            setLoggedIn(true)
+        }).catch(() => {
+            setLoggedIn(false)
+        })
+    }, [])
+
+    function goToBlog(id){
+            if(!logedIn){
+                toast("Please login for more Blogs")
+            }else{
+                navigate({
+                    pathname : "/userViewPost",
+                    search:createSearchParams({
+                        id:id
+                    }).toString()
+                })
+            }
+    }
 
     const responsive = {
         desktop: {
@@ -24,6 +62,22 @@ function LandingPage() {
             slidesToSlide: 1 // optional, default to 1.
         }
     };
+
+    function nextPage() {
+        !logedIn && toast('Please Login For More Blogs', {
+            style: {
+              border: '1px solid #48e052',
+              padding: '16px',
+              color: '#000000',
+            },
+            iconTheme: {
+              primary: '#48e052',
+              secondary: '#FFFAEE',
+            },
+          });
+    }
+
+    
 
     return (
         <>
@@ -54,61 +108,43 @@ function LandingPage() {
                         <div className="">
                             <p>Lorem ipsum dolor Lorem, ipsum dolor sit amet consectetur adipisicing elit. Nobis, quo nostrum. Voluptatem nulla, saepe impedit autem itaque nam iure assumenda illum cum dicta possimus. Laudantium sed odio magni earum molestias! Lorem ipsum dolor sit amet consectetur adipisicing elit. Consequuntur ea esse quo sapiente laudantium nam quidem voluptas dolorem, fuga voluptate commodi, ipsa odio, perspiciatis tempora enim omnis animi non iure? Lorem ipsum dolor sit amet consectetur adipisicing elit. Suscipit nam distinctio repudiandae adipisci cupiditate, minus earum pariatur quia vero natus itaque excepturi numquam quaerat nulla facilis culpa libero, porro provident. Lorem ipsum dolor sit amet consectetur adipisicing elit. Quia nisi nihil necessitatibus tempore nulla temporibus hic. Temporibus reprehenderit delectus voluptas perspiciatis animi numquam possimus atque. Debitis, culpa! Praesentium, maxime nesciunt. Lorem ipsum dolor sit amet consectetur adipisicing elit. Odit, aspernatur eveniet. Perferendis, veritatis sed distinctio eum praesentium facere, ab sunt porro eius omnis at deleniti ullam odit adipisci placeat modi. Lorem ipsum dolor, sit amet consectetur adipisicing elit. Totam similique tenetur eligendi, tempore labore numquam voluptate libero perspiciatis! Laboriosam pariatur aut magnam. Corporis quod ullam in iure! Sunt, delectus assumenda? Lorem ipsum dolor sit amet consectetur adipisicing elit. Provident et esse ullam illo? Suscipit, explicabo natus odit laudantium beatae sit aliquam aspernatur molestias voluptatem? Impedit consequuntur natus assumenda. Esse, exercitationem! Lorem ipsum dolor sit amet consectetur adipisicing elit. Eveniet voluptatem minima voluptas repellat sunt temporibus esse ipsa maiores! Odit voluptas, dolores cupiditate provident tenetur fugit. Mollitia excepturi minima praesentium quod. sit amet consectetur adipisicing elit. Id, excepturi totam mollitia et adipisci laboriosam aliquam est ex, atque ea officia iusto fugiat optio perspiciatis quas vero hic quo? Accusantium! Lorem ipsum dolor sit amet consectetur adipisicing elit. Fugit corrupti veritatis facilis fugiat. Optio fuga nam tempora quaerat recusandae quidem dolorum commodi facere voluptas incidunt delectus voluptatibus, nisi, doloremque pariatur. Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatem numquam repellat dolor mollitia distinctio illum facere commodi explicabo cupiditate veniam assumenda recusandae animi ut, esse beatae, consequatur aspernatur! Illum, dolorum. Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptates, molestiae quam. Iste modi et eos illo porro enim quis? Unde accusantium rerum saepe eligendi tempore sint iure excepturi placeat sapiente. Lorem ipsum, dolor sit amet consectetur adipisicing elit. Perspiciatis nihil tenetur illum, nobis optio dolores esse facilis culpa, quo magnam est sequi ex blanditiis corrupti dolor excepturi ipsam sunt inventore? Lorem ipsum dolor sit amet, consectetur adipisicing elit. Deserunt, culpa ratione? Aperiam exercitationem modi deleniti, dolore blanditiis hic quos vero qui inventore laudantium harum pariatur et nam ducimus tempore voluptatem! Lorem ipsum dolor sit amet consectetur adipisicing elit. Inventore natus sapiente molestias eum quam optio dolores voluptatibus sunt nam, ducimus, assumenda doloribus quo temporibus non doloremque culpa quae sequi nemo! Lorem ipsum dolor sit amet consectetur adipisicing elit. Asperiores repellat ea error ullam! Qui aperiam nobis aut dignissimos ab quia. Maxime reiciendis in eos harum labore veniam similique ratione cumque?</p>
                             <div className="w-12/12 my-4 h-1 bg-black opacity-10"></div>
-                            <div className="flex justify-end space-x-1 text-2xl">
+                            <div className="flex justify-end space-x-1 text-2xl cursor-pointer" onClick={nextPage}>
                                 <div className=" py-5">
                                     <AiOutlineArrowRight />
                                 </div>
                                 <div className=" py-5">
-                                    <h1>CAPTER - 2</h1>
+                                    <h1 >CAPTER - 2</h1>
                                 </div>
                             </div>
                         </div>
-                    
-                    {/* ........................................................ */}
-                    <h1 className="font-semibold text-xl flex space-x-2 mt-4 ">Short Reads</h1>
+
+                        {/* ........................................................ */}
+                        <h1 className="font-semibold text-xl flex space-x-2 mt-4 ">Short Reads</h1>
                         <div className=" flex mb-4 ">
                             <div className="w-1/12 h-1 bg-black"></div>
                             <div className="w-11/12 h-1 bg-black opacity-10"></div>
                         </div>
-                    <Carousel responsive={responsive} className="py-3">
-                        <div> <div className="flex ">
-                                <img src="images/naruto-11.jpg" className="w-56 h-32  object-center" alt="" />
-                                <div className="">
-                                    <h1 className="font-bold p-2">Akame Ga Kill: Season finale</h1>
-                                    <div className="p-2">
-                                    <p className="text-xs"> voluptatibus excepturi Asperiores repellat ea error e iusto eum doloremque!</p>
+                        <Carousel responsive={responsive} className="py-3">
+                            {coroselPost.map((data, i) => {
+                               return  <>
+                                    <div className="flex cursor-pointer" key={i} onClick={()=>{goToBlog(data._id)}} >
+                                        <img src={`${API}images/${data?.image}`} className="w-56 h-32  object-center" alt="" />
+                                        <div className="">
+                                            <h1 className="font-bold p-2 uppercase">{data?.heading}</h1>
+                                            <div className="p-2">
+                                                <p className="text-xs"> {data?.chapters.slice(0,50)}</p>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
-                            </div></div>
-                        <div> <div className="flex ">
-                                <img src="images/naruto-11.jpg" className="w-56 h-32 object-center" alt="" />
-                                <div className="">
-                                    <h1 className="font-bold p-2">Akame Ga Kill: Season finale</h1>
-                                    <div className="p-2">
-                                    <p className="text-xs"> voluptatibus excepturi Asperiores repellat ea error e iusto eum doloremque!</p>
-                                    </div>                              </div>
-                            </div></div>
-                        <div> <div className="flex ">
-                                <img src="images/naruto-11.jpg" className="w-56 h-32 object-center" alt="" />
-                                <div className="">
-                                    <h1 className="font-bold p-2">Akame Ga Kill: Season finale</h1>
-                                    <div className="p-2">
-                                    <p className="text-xs"> voluptatibus excepturi Asperiores repellat ea error e iusto eum doloremque!</p>
-                                    </div>                                </div>
-                            </div></div>
-                        <div> <div className="flex ">
-                                <img src="images/naruto-11.jpg" className="w-56 h-32 object-center" alt="" />
-                                <div className="">
-                                    <h1 className="font-bold p-2">Akame Ga Kill: Season finale</h1>
-                                    <div className="p-2">
-                                    <p className="text-xs"> voluptatibus excepturi Asperiores repellat ea error e iusto eum doloremque!</p>
-                                    </div>                             </div>
-                            </div></div>
-                       
-                    </Carousel>
+                                </>
+                            })}
 
-                    {/* ........................................................ */}
-            </div>
+
+
+                        </Carousel>
+
+                        {/* ........................................................ */}
+                    </div>
                 </div>
             </div>
         </>
